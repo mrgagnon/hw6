@@ -6,6 +6,10 @@
 #include <iostream>
 using namespace std;
 
+/*Prints the given board
+ * @param board The board to be printed
+ * @param n The number of elements
+ */
 void printBoard(int* board, int n){
 	for (int i = 0; i < n; i++){
 		cout << board[i] << ", ";
@@ -43,6 +47,11 @@ bool isLegalPosition(int *board, int n){
 	return true;
 }
 
+/* Finds the position of the first empty row
+ * @param board The board to be checked
+ * @param n The number of elements
+ * @return an int representing the position
+ */
 int firstEmptyRow(int* board, int n){
 	int ctQueens = 0;
 	for (int i = 0; i < n; i++){
@@ -53,7 +62,9 @@ int firstEmptyRow(int* board, int n){
 	return ctQueens;
 }
 
-/* Returns a board where the last row with a queen the queen is moved one to the right
+/* Either moves the last queen over by one or reaches a dead end and needs to backtrack
+ * @param board The board holding the board configuration
+ * @param n The number of elements
  * @returns The next board configuration despite whether it's legal or not
  */
 int* successor(int* board, int n){
@@ -78,8 +89,12 @@ int* successor(int* board, int n){
 	return board;
 }
 
+/* Find the next legal configuartion of the board
+ * @param board The board to be changed
+ * @param n The number of elements
+ * @return The new board with the legal configuration or all zeros if impossible
+ */
 int* nextLegalPosition(int* board, int n){
-	//printBoard(board, n);
 	bool isBoardLegal= isLegalPosition(board, n);
 
 	if (isBoardLegal == true){ //Legal
@@ -107,6 +122,8 @@ int* nextLegalPosition(int* board, int n){
 	return board;
 }
 
+/*Prints first solution for 4 queens to 30 queens
+ */
 void makeBoard(){
 	for (int i = 4; i < 31; i++){
 		int b[i] = {0};
