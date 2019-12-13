@@ -7,11 +7,10 @@
 using namespace std;
 
 void printBoard(int* board, int n){
-	cout << "(";
 	for (int i = 0; i < n; i++){
 		cout << board[i] << ", ";
 	}
-	cout << ")" << endl;
+	cout << endl;
 }
 
 /* Checks to the given board to see if all of the queens are in a legal position
@@ -80,18 +79,18 @@ int* successor(int* board, int n){
 }
 
 int* nextLegalPosition(int* board, int n){
+	//printBoard(board, n);
 	bool isBoardLegal= isLegalPosition(board, n);
 
-	if (isBoardLegal == true){ // partial, legal
-		if (board[n-1] != 0){
+	if (isBoardLegal == true){ //Legal
+		if (board[n-1] != 0){ //full
 			int* nextBoard = board;
 			do {
 				nextBoard = successor(nextBoard, n);
 			} while (!isLegalPosition(nextBoard, n));
 			board = nextBoard;
-
 		}
-		else {
+		else { //partial, legal
 			int r = firstEmptyRow(board, n);
 			board[r] = 1;
 			nextLegalPosition(board, n);
@@ -107,6 +106,22 @@ int* nextLegalPosition(int* board, int n){
 	}
 	return board;
 }
+
+int* makeBoard(){
+	cout << "in makeBoard()" << endl;
+	int n = 4;
+	int b[4] = {1,0,0,0};
+	int* board = b;
+	do {
+		board = nextLegalPosition(board, n);
+		printBoard(board,n);
+	} while (board[n-1]==0);
+
+	return board;
+}
+
+
+
 
 int main() {
 	// Testing isLegalPosition
@@ -135,30 +150,33 @@ int main() {
 	cout << "Should be false: (col) " << r6 << endl;
 
 	//Testing nextLegalPosition
-
 	int arr1[8] = {1,6,8,3,5,0,0,0};
 	int* result1 = nextLegalPosition(arr1, 8);
-	cout << "Expected 1: (1, 6, 8, 3, 7, 0, 0, 0) Actual: ";
+	cout << "Next expected 1: (1, 6, 8, 3, 7, 0, 0, 0) Actual: ";
 	printBoard(result1, 8);
 
 	int arr2[8] = {1,6,8,3,7,0,0,0};
 	int* result2 = nextLegalPosition(arr2, 8);
-	cout << "Expected 2: (1, 6, 8, 3, 7, 4, 0, 0) Actual: ";
+	cout << "Next expected 2: (1, 6, 8, 3, 7, 4, 0, 0) Actual: ";
 	printBoard(result2, 8);
 
 	int arr3[3] = {2,0,0};
 	int* result3 = nextLegalPosition(arr3,3);
-	cout << "Expected 3 First: (3,0,0) Actual: ";
+	cout << "Next expected 3a: (3,0,0) Actual: ";
 	printBoard(result3, 3);
 
 	int* res3 = nextLegalPosition(result3, 3);
-	cout << "Expected 3 Second No Possible Sol'n: (0,0,0) Actual: ";
+	cout << "Next expected 3b No sol'n: (0,0,0) Actual: ";
 	printBoard(res3,3);
-
 
 	int arr4[8] = {1,6,8,3,7,4,2,5};
 	int* result4 = nextLegalPosition(arr4,8);
-	cout << "Expected 4: (1, 6, 8, 5, 0, 0, 0, 0) Actual: ";
+	cout << "Next expected 4: (1, 6, 8, 5, 0, 0, 0, 0) Actual: ";
 	printBoard(result4, 8);
+
+	//testing size 4
+	int* res = makeBoard();
+	//printBoard(res,4);
+
 	return 0;
 }
