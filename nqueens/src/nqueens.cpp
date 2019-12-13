@@ -6,6 +6,14 @@
 #include <iostream>
 using namespace std;
 
+void printBoard(int* board, int n){
+	cout << "(";
+	for (int i = 0; i < n; i++){
+		cout << board[i] << ", ";
+	}
+	cout << ")" << endl;
+}
+
 /* Checks to the given board to see if all of the queens are in a legal position
  * @param board Contains the locations of the queens. The position is the row, and the value is the column
  * @param n The number of queens
@@ -50,77 +58,57 @@ int firstEmptyRow(int* board, int n){
  * @returns The next board configuration despite whether it's legal or not
  */
 int* successor(int* board, int n){
-	cout << "In successor" << endl;
 	int rLastQueen = firstEmptyRow(board, n)-1;
-	board[rLastQueen] = board[rLastQueen]+1;
+
+	if (board[n-1] != 0){
+		rLastQueen = n-1;
+	}
+
+	if (board[rLastQueen] < n){ //move to right by one, not at the end
+		board[rLastQueen] = board[rLastQueen]+1;
+	}
+	else {
+		board[rLastQueen] = 0; // remove this queen because reached dead-end
+		rLastQueen--;
+		while (board[rLastQueen] == n){ // back tracking, find the first queen that can be to the right by one
+			board[rLastQueen] = 0;
+			rLastQueen--;
+		}
+		board[rLastQueen] = board[rLastQueen]+1;
+	}
 	return board;
 }
 
 int* nextLegalPosition(int* board, int n){
 	bool isBoardLegal= isLegalPosition(board, n);
 
-	if (isBoardLegal == true){
-		cout << "Board Legal" << endl;
-		int r = firstEmptyRow(board, n);
-		//cout << r << endl;
-		board[r] = 1;
-		nextLegalPosition(board, n);
+	if (isBoardLegal == true){ // partial, legal
+		if (board[n-1] != 0){
+			int* nextBoard = board;
+			do {
+				nextBoard = successor(nextBoard, n);
+			} while (!isLegalPosition(nextBoard, n));
+			board = nextBoard;
+
+		}
+		else {
+			int r = firstEmptyRow(board, n);
+			board[r] = 1;
+			nextLegalPosition(board, n);
+		}
 	}
 
-	else if (isBoardLegal == false){
-		cout << "Board Illegal" << endl;
-		int * nextBoard = board;
+	else if (isBoardLegal == false){ // partial, illegal
+		int* nextBoard = board;
 		do {
 			nextBoard = successor(nextBoard, n);
 		} while (!isLegalPosition(nextBoard, n));
 		board = nextBoard;
-
 	}
 	return board;
 }
 
-/*
-int* nextLegalPosition(int* board, int n){
-	cout << "In nextLegalPosition" << endl;;
-	int curQueenRow = 0;
-	for (int i = 0; i < n; i++){
-		if (board[i] != 0){
-			curQueenRow++;
-		}
-	}
-
-	int curBoard[n];
-	for (int i = 0; i < n; i++){
-		curBoard[i] = board[i];
-	}
-
-	curBoard[curQueenRow] = 1; // Place newest queen in the first column
-	if (isLegalPosition(curBoard,n)){ // if it works return the board
-		return curBoard;
-	}
-
-	int* nextBoard;
-	bool flag = true;
-	while (flag) {
-		nextBoard = successor(nextBoard,n); //gets what the next board configuration looks like,
-		if (isLegalPosition(nextBoard,n)){
-			return curBoard;
-		}
-		else if (nextBoard[curQueenRow] == n){ //illegal and new queen reached the last column/potentional positions
-			nextBoard[curQueenRow] = 0;
-		}
-	}
-
-
-	//loop, successor, if true move on to next row, if false try again, if false and end of row set to zero go to previous row
-	// move to next legal position, move back down to next row and try again
-
-	return curBoard;
-}*/
-
 int main() {
-	cout << "hello" << endl;
-
 	// Testing isLegalPosition
 	int b1[8] = {1,6,8,3,7,4,2,5};
 	bool r1 = isLegalPosition(b1, 8);
@@ -146,12 +134,31 @@ int main() {
 	bool r6 = isLegalPosition(b6, 7);
 	cout << "Should be false: (col) " << r6 << endl;
 
-	int arr[8] = {1,6,8,3,0,0,0,0};
-	int* result = nextLegalPosition(arr, 8);
-	for (int i = 0; i < 8; i++){
-		cout << result[i] << "  ";
-	}
+	//Testing nextLegalPosition
+
+	int arr1[8] = {1,6,8,3,5,0,0,0};
+	int* result1 = nextLegalPosition(arr1, 8);
+	cout << "Expected 1: (1, 6, 8, 3, 7, 0, 0, 0) Actual: ";
+	printBoard(result1, 8);
+
+	int arr2[8] = {1,6,8,3,7,0,0,0};
+	int* result2 = nextLegalPosition(arr2, 8);
+	cout << "Expected 2: (1, 6, 8, 3, 7, 4, 0, 0) Actual: ";
+	printBoard(result2, 8);
+
+	int arr3[3] = {2,0,0};
+	int* result3 = nextLegalPosition(arr3,3);
+	cout << "Expected 3 First: (3,0,0) Actual: ";
+	printBoard(result3, 3);
+
+	int* res3 = nextLegalPosition(result3, 3);
+	cout << "Expected 3 Second No Possible Sol'n: (0,0,0) Actual: ";
+	printBoard(res3,3);
 
 
+	int arr4[8] = {1,6,8,3,7,4,2,5};
+	int* result4 = nextLegalPosition(arr4,8);
+	cout << "Expected 4: (1, 6, 8, 5, 0, 0, 0, 0) Actual: ";
+	printBoard(result4, 8);
 	return 0;
 }
