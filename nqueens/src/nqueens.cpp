@@ -107,21 +107,18 @@ int* nextLegalPosition(int* board, int n){
 	return board;
 }
 
-int* makeBoard(){
-	cout << "in makeBoard()" << endl;
-	int n = 4;
-	int b[4] = {1,0,0,0};
-	int* board = b;
-	do {
-		board = nextLegalPosition(board, n);
-		printBoard(board,n);
-	} while (board[n-1]==0);
+void makeBoard(){
+	for (int i = 4; i < 31; i++){
+		int b[i] = {0};
+		int* board = b;
+		board[0] = 1;
 
-	return board;
+		do {
+			board = nextLegalPosition(board, i);
+		} while (board[i-1]==0);
+		printBoard(board, i);
+	}
 }
-
-
-
 
 int main() {
 	// Testing isLegalPosition
@@ -174,9 +171,8 @@ int main() {
 	cout << "Next expected 4: (1, 6, 8, 5, 0, 0, 0, 0) Actual: ";
 	printBoard(result4, 8);
 
-	//testing size 4
-	int* res = makeBoard();
-	//printBoard(res,4);
+	//Printing boards
+	makeBoard();
 
 	return 0;
 }
